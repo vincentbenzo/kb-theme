@@ -30,40 +30,94 @@
     optionsContainer.className = 'workspace-options-container';
     optionsContainer.style.display = 'none';
     
-    // Define workspace options
-    const options = [
-      { value: 'https://vincentbenzo.github.io/kb-platform/', text: 'Main' },
-      { value: 'https://vincentbenzo.github.io/kb-engineering/', text: 'Engineering' },
-      { value: 'https://vincentbenzo.github.io/kb-grc/', text: 'GRC' },
-      { value: 'https://vincentbenzo.github.io/kb-networking/', text: 'Networking' }
-    ];
+    // Fetch workspaces configuration
+    fetch('/assets/config/workspaces.yml')
+      .then(response => response.text())
+      .then(yamlText => {
+        // Parse YAML - using a simple approach since the structure is straightforward
+        const workspaces = parseWorkspacesYaml(yamlText);
+        
+        // Set initial selected option
+        let selectedOption = workspaces[0];
+        const currentUrl = window.location.href;
+        
+        // Create all option elements
+        workspaces.forEach(option => {
+          // Check if this is the current URL
+          if (currentUrl.includes(option.url)) {
+            selectedOption = option;
+          }
+          
+          const optionElement = document.createElement('div');
+          optionElement.className = 'workspace-option';
+          optionElement.textContent = option.name;
+          optionElement.dataset.value = option.url;
+          
+          // Add click event to option
+          optionElement.addEventListener('click', function() {
+            changeWorkspace(option.url);
+          });
+          
+          optionsContainer.appendChild(optionElement);
+        });
+        
+        // Set the button text to the selected option
+        dropdownButton.textContent = selectedOption.name;
+        
+        // Add elements to the container
+        selectorContainer.appendChild(dropdownButton);
+        selectorContainer.appendChild(optionsContainer);
+        
+        // Find where to insert the workspace selector - after the site title
+        const headerTitle = document.querySelector('.md-header__title');
+        if (headerTitle && headerTitle.parentNode) {
+          headerTitle.parentNode.insertBefore(selectorContainer, headerTitle.nextSibling);
+        }
+      })
+      .catch(error => {
+        console.error('Error loading workspaces configuration:', error);
+        // Fallback to default workspace
+        dropdownButton.textContent = 'Main';
+        selectorContainer.appendChild(dropdownButton);
+        const headerTitle = document.querySelector('.md-header__title');
+        if (headerTitle && headerTitle.parentNode) {
+          headerTitle.parentNode.insertBefore(selectorContainer, headerTitle.nextSibling);
+        }
+      });
     
-    // Set initial selected option
-    let selectedOption = options[0];
-    const currentUrl = window.location.href;
-    
-    // Create all option elements
-    options.forEach(option => {
-      // Check if this is the current URL
-      if (currentUrl.includes(option.value)) {
-        selectedOption = option;
-      }
+    // Simple YAML parser for our specific format
+    function parseWorkspacesYaml(yamlText) {
+      const workspaces = [];
+      const lines = yamlText.split('\n');
+      let inWorkspaces = false;
       
-      const optionElement = document.createElement('div');
-      optionElement.className = 'workspace-option';
-      optionElement.textContent = option.text;
-      optionElement.dataset.value = option.value;
+      let currentWorkspace = {};
       
-      // Add click event to option
-      optionElement.addEventListener('click', function() {
-        changeWorkspace(option.value);
+      lines.forEach(line => {
+        if (line.trim() === 'workspaces:') {
+          inWorkspaces = true;
+          return;
+        }
+        
+        if (!inWorkspaces) return;
+        
+        if (line.trim().startsWith('- name:')) {
+          if (currentWorkspace.name) {
+            workspaces.push(currentWorkspace);
+          }
+          currentWorkspace = {};
+          currentWorkspace.name = line.split(':')[1].trim();
+        } else if (line.trim().startsWith('url:')) {
+          currentWorkspace.url = line.split(':')[1].trim() + (line.split(':')[2] || '');
+        }
       });
       
-      optionsContainer.appendChild(optionElement);
-    });
-    
-    // Set the button text to the selected option
-    dropdownButton.textContent = selectedOption.text;
+      if (currentWorkspace.name) {
+        workspaces.push(currentWorkspace);
+      }
+      
+      return workspaces;
+    }
     
     // Toggle dropdown on button click
     dropdownButton.addEventListener('click', function() {
@@ -85,16 +139,6 @@
         e.preventDefault();
       }
     });
-    
-    // Add elements to the container
-    selectorContainer.appendChild(dropdownButton);
-    selectorContainer.appendChild(optionsContainer);
-    
-    // Find where to insert the workspace selector - after the site title
-    const headerTitle = document.querySelector('.md-header__title');
-    if (headerTitle && headerTitle.parentNode) {
-      headerTitle.parentNode.insertBefore(selectorContainer, headerTitle.nextSibling);
-    }
   });
 </script>
 {% endblock %}
