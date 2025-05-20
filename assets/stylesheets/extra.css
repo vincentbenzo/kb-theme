@@ -1,4 +1,4 @@
-/* Workspace Selector Styling - Common styles */
+/* Workspace Selector Styling - to match search bar */
 .workspace-selector,
 .workspace-selector-inline {
   margin-right: 1rem;
@@ -15,10 +15,10 @@
   -webkit-appearance: none !important;
   -moz-appearance: none !important;
   border: none !important;
-  border-radius: 0.1rem !important;
+  border-radius: 2px !important;
   padding: 0.5rem 2rem 0.5rem 0.7rem !important;
   font-size: 0.8rem !important;
-  transition: background-color 125ms, color 125ms !important;
+  transition: all 0.25s !important;
   font-family: var(--md-text-font-family, "") !important;
   background-repeat: no-repeat !important;
   background-position: right 0.4rem center !important;
@@ -27,11 +27,11 @@
   cursor: pointer;
 }
 
-/* Dark theme (slate) styling */
+/* Dark theme (slate) styling - match search bar */
 [data-md-color-scheme="slate"] .workspace-selector select,
 [data-md-color-scheme="slate"] .workspace-selector-inline select,
 [data-md-color-scheme="slate"] #workspace-dropdown {
-  background-color: hsla(var(--md-hue,0), 0%, 0%, 0.26) !important;
+  background-color: rgba(255, 255, 255, 0.07) !important;
   color: var(--md-default-fg-color) !important;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(255, 255, 255, 0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
 }
@@ -42,7 +42,7 @@
 [data-md-color-scheme="slate"] .workspace-selector-inline select:focus,
 [data-md-color-scheme="slate"] #workspace-dropdown:hover,
 [data-md-color-scheme="slate"] #workspace-dropdown:focus {
-  background-color: hsla(var(--md-hue,0), 0%, 0%, 0.36) !important;
+  background-color: rgba(255, 255, 255, 0.12) !important;
   outline: none !important;
   box-shadow: none !important;
 }
@@ -55,13 +55,13 @@
   padding: 0.6rem !important;
 }
 
-/* Light theme styling */
+/* Light theme styling - match search bar */
 [data-md-color-scheme="default"] .workspace-selector select,
 [data-md-color-scheme="default"] .workspace-selector-inline select,
 [data-md-color-scheme="default"] #workspace-dropdown {
-  background-color: var(--md-primary-fg-color) !important;
-  color: var(--md-primary-bg-color) !important;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23b6bad4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+  background-color: rgba(0, 0, 0, 0.07) !important;
+  color: var(--md-primary-fg-color--light) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(0, 0, 0, 0.54)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
 }
 
 [data-md-color-scheme="default"] .workspace-selector select:hover,
@@ -70,7 +70,7 @@
 [data-md-color-scheme="default"] .workspace-selector-inline select:focus,
 [data-md-color-scheme="default"] #workspace-dropdown:hover,
 [data-md-color-scheme="default"] #workspace-dropdown:focus {
-  background-color: var(--md-accent-fg-color) !important;
+  background-color: rgba(0, 0, 0, 0.12) !important;
   outline: none !important;
   box-shadow: none !important;
 }
@@ -78,8 +78,8 @@
 [data-md-color-scheme="default"] .workspace-selector select option,
 [data-md-color-scheme="default"] .workspace-selector-inline select option,
 [data-md-color-scheme="default"] #workspace-dropdown option {
-  background-color: var(--md-primary-fg-color) !important;
-  color: var(--md-primary-bg-color) !important;
+  background-color: white !important;
+  color: var(--md-default-fg-color) !important;
   padding: 0.6rem !important;
 }
 
