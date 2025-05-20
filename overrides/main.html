@@ -9,43 +9,77 @@
   // Function to handle workspace selection
   function changeWorkspace(workspacePath) {
     if (workspacePath) {
-      // Navigate to the selected workspace
       window.location.href = workspacePath;
     }
   }
   
   document.addEventListener('DOMContentLoaded', function() {
-    // Create the custom workspace selector
+    console.log("Initializing workspace selector...");
+    
+    // Create the selector elements
     const selectorContainer = document.createElement('div');
     selectorContainer.className = 'workspace-selector';
     
-    // Create the dropdown trigger button
     const dropdownButton = document.createElement('div');
     dropdownButton.className = 'workspace-dropdown-button';
     dropdownButton.setAttribute('aria-label', 'Select workspace');
     dropdownButton.setAttribute('tabindex', '0');
+    dropdownButton.textContent = 'Debugging...';
     
-    // Create the options container
     const optionsContainer = document.createElement('div');
     optionsContainer.className = 'workspace-options-container';
     optionsContainer.style.display = 'none';
     
-    // Fetch workspaces configuration
-    fetch('/assets/config/workspaces.yml')
-      .then(response => response.text())
+    // Add elements to the DOM
+    selectorContainer.appendChild(dropdownButton);
+    selectorContainer.appendChild(optionsContainer);
+    
+    const headerTitle = document.querySelector('.md-header__title');
+    if (headerTitle && headerTitle.parentNode) {
+      headerTitle.parentNode.insertBefore(selectorContainer, headerTitle.nextSibling);
+      console.log("Selector container added to DOM");
+    } else {
+      console.error("Could not find header title element");
+    }
+    
+    // Get the base URL - crucial for proper path resolution
+    const baseUrl = document.querySelector('base')?.getAttribute('href') || '';
+    console.log("Base URL:", baseUrl);
+    
+    // Correctly form the path to the YAML file
+    const yamlPath = baseUrl + 'assets/config/workspaces.yml';
+    console.log("Attempting to load workspaces from:", yamlPath);
+    
+    // Load the workspaces data
+    fetch(yamlPath)
+      .then(response => {
+        console.log("Fetch response status:", response.status);
+        if (!response.ok) {
+          throw new Error(`HTTP error: ${response.status}`);
+        }
+        return response.text();
+      })
       .then(yamlText => {
-        // Parse YAML - using a simple approach since the structure is straightforward
+        console.log("Received YAML content:", yamlText);
         const workspaces = parseWorkspacesYaml(yamlText);
+        console.log("Parsed workspaces:", workspaces);
         
-        // Set initial selected option
+        if (!workspaces || workspaces.length === 0) {
+          throw new Error("No workspaces found in YAML");
+        }
+        
         let selectedOption = workspaces[0];
         const currentUrl = window.location.href;
+        console.log("Current URL:", currentUrl);
         
         // Create all option elements
         workspaces.forEach(option => {
+          console.log("Processing workspace option:", option);
+          
           // Check if this is the current URL
           if (currentUrl.includes(option.url)) {
             selectedOption = option;
+            console.log("Selected as current workspace");
           }
           
           const optionElement = document.createElement('div');
@@ -55,6 +89,7 @@
           
           // Add click event to option
           optionElement.addEventListener('click', function() {
+            console.log("Workspace selected:", option.name);
             changeWorkspace(option.url);
           });
           
@@ -63,76 +98,86 @@
         
         // Set the button text to the selected option
         dropdownButton.textContent = selectedOption.name;
-        
-        // Add elements to the container
-        selectorContainer.appendChild(dropdownButton);
-        selectorContainer.appendChild(optionsContainer);
-        
-        // Find where to insert the workspace selector - after the site title
-        const headerTitle = document.querySelector('.md-header__title');
-        if (headerTitle && headerTitle.parentNode) {
-          headerTitle.parentNode.insertBefore(selectorContainer, headerTitle.nextSibling);
-        }
+        console.log("Dropdown initialized with:", selectedOption.name);
       })
       .catch(error => {
-        console.error('Error loading workspaces configuration:', error);
-        // Fallback to default workspace
-        dropdownButton.textContent = 'Main';
-        selectorContainer.appendChild(dropdownButton);
-        const headerTitle = document.querySelector('.md-header__title');
-        if (headerTitle && headerTitle.parentNode) {
-          headerTitle.parentNode.insertBefore(selectorContainer, headerTitle.nextSibling);
-        }
+        console.error("Error loading workspaces:", error);
+        dropdownButton.textContent = 'Error loading';
       });
     
-    // Simple YAML parser for our specific format
+    // Improved YAML parser with better error handling
     function parseWorkspacesYaml(yamlText) {
+      if (!yamlText || yamlText.trim() === '') {
+        console.error("Empty YAML content");
+        return [];
+      }
+      
       const workspaces = [];
       const lines = yamlText.split('\n');
       let inWorkspaces = false;
+      let currentWorkspace = null;
       
-      let currentWorkspace = {};
+      console.log("Parsing YAML with", lines.length, "lines");
       
-      lines.forEach(line => {
-        if (line.trim() === 'workspaces:') {
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        console.log(`Line ${i}: ${line}`);
+        
+        if (line === 'workspaces:') {
+          console.log("Found workspaces section");
           inWorkspaces = true;
-          return;
+          continue;
         }
         
-        if (!inWorkspaces) return;
+        if (!inWorkspaces || line === '') continue;
         
-        if (line.trim().startsWith('- name:')) {
-          if (currentWorkspace.name) {
-            workspaces.push(currentWorkspace);
+        if (line.startsWith('- name:')) {
+          if (currentWorkspace && currentWorkspace.name && currentWorkspace.url) {
+            console.log("Adding workspace:", currentWorkspace);
+            workspaces.push(Object.assign({}, currentWorkspace));
           }
+          
           currentWorkspace = {};
-          currentWorkspace.name = line.split(':')[1].trim();
-        } else if (line.trim().startsWith('url:')) {
-          currentWorkspace.url = line.split(':')[1].trim() + (line.split(':')[2] || '');
+          const nameValue = line.substring(7).trim();
+          console.log("Found workspace name:", nameValue);
+          currentWorkspace.name = nameValue;
+        } else if (line.startsWith('url:')) {
+          if (!currentWorkspace) {
+            console.error("Found url without a workspace at line", i);
+            continue;
+          }
+          
+          // Handle URLs with multiple colons (like https://)
+          const urlStart = line.indexOf(':') + 1;
+          const urlValue = line.substring(urlStart).trim();
+          console.log("Found workspace URL:", urlValue);
+          currentWorkspace.url = urlValue;
         }
-      });
-      
-      if (currentWorkspace.name) {
-        workspaces.push(currentWorkspace);
       }
       
+      // Add the last workspace if it exists
+      if (currentWorkspace && currentWorkspace.name && currentWorkspace.url) {
+        console.log("Adding final workspace:", currentWorkspace);
+        workspaces.push(Object.assign({}, currentWorkspace));
+      }
+      
+      console.log("Total workspaces found:", workspaces.length);
       return workspaces;
     }
     
-    // Toggle dropdown on button click
+    // Event handlers
     dropdownButton.addEventListener('click', function() {
       const isVisible = optionsContainer.style.display !== 'none';
       optionsContainer.style.display = isVisible ? 'none' : 'block';
+      console.log("Dropdown toggled:", !isVisible);
     });
     
-    // Close dropdown when clicking outside
     document.addEventListener('click', function(event) {
       if (!selectorContainer.contains(event.target)) {
         optionsContainer.style.display = 'none';
       }
     });
     
-    // Keyboard navigation
     dropdownButton.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' || e.key === ' ') {
         optionsContainer.style.display = 'block';
