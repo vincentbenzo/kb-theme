@@ -1,32 +1,36 @@
 {% extends "base.html" %}
-
 {% block extrahead %}
 {{ super() }}
 <meta name="custom-override" content="active">
 {% endblock %}
-
 {% block scripts %}
 {{ super() }}
 <script>
-  // Function to handle workspace selection change
+  // Function to handle workspace selection
   function changeWorkspace(workspacePath) {
     if (workspacePath) {
       // Navigate to the selected workspace
       window.location.href = workspacePath;
     }
   }
-
+  
   document.addEventListener('DOMContentLoaded', function() {
-    // Create the workspace selector
+    // Create the custom workspace selector
     const selectorContainer = document.createElement('div');
-    selectorContainer.className = 'workspace-selector'; // Changed from workspace-selector-inline
+    selectorContainer.className = 'workspace-selector';
     
-    const selectElement = document.createElement('select');
-    selectElement.id = 'workspace-dropdown';
-    selectElement.setAttribute('onchange', 'changeWorkspace(this.value)');
-    selectElement.setAttribute('aria-label', 'Select workspace');
+    // Create the dropdown trigger button
+    const dropdownButton = document.createElement('div');
+    dropdownButton.className = 'workspace-dropdown-button';
+    dropdownButton.setAttribute('aria-label', 'Select workspace');
+    dropdownButton.setAttribute('tabindex', '0');
     
-    // Add options with FULL URLs for separate repositories
+    // Create the options container
+    const optionsContainer = document.createElement('div');
+    optionsContainer.className = 'workspace-options-container';
+    optionsContainer.style.display = 'none';
+    
+    // Define workspace options
     const options = [
       { value: 'https://vincentbenzo.github.io/kb-platform/', text: 'Main' },
       { value: 'https://vincentbenzo.github.io/kb-engineering/', text: 'Engineering' },
@@ -34,29 +38,62 @@
       { value: 'https://vincentbenzo.github.io/kb-networking/', text: 'Networking' }
     ];
     
+    // Set initial selected option
+    let selectedOption = options[0];
+    const currentUrl = window.location.href;
+    
+    // Create all option elements
     options.forEach(option => {
-      const optionElement = document.createElement('option');
-      optionElement.value = option.value;
+      // Check if this is the current URL
+      if (currentUrl.includes(option.value)) {
+        selectedOption = option;
+      }
+      
+      const optionElement = document.createElement('div');
+      optionElement.className = 'workspace-option';
       optionElement.textContent = option.text;
-      selectElement.appendChild(optionElement);
+      optionElement.dataset.value = option.value;
+      
+      // Add click event to option
+      optionElement.addEventListener('click', function() {
+        changeWorkspace(option.value);
+      });
+      
+      optionsContainer.appendChild(optionElement);
     });
     
-    selectorContainer.appendChild(selectElement);
+    // Set the button text to the selected option
+    dropdownButton.textContent = selectedOption.text;
+    
+    // Toggle dropdown on button click
+    dropdownButton.addEventListener('click', function() {
+      const isVisible = optionsContainer.style.display !== 'none';
+      optionsContainer.style.display = isVisible ? 'none' : 'block';
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      if (!selectorContainer.contains(event.target)) {
+        optionsContainer.style.display = 'none';
+      }
+    });
+    
+    // Keyboard navigation
+    dropdownButton.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        optionsContainer.style.display = 'block';
+        e.preventDefault();
+      }
+    });
+    
+    // Add elements to the container
+    selectorContainer.appendChild(dropdownButton);
+    selectorContainer.appendChild(optionsContainer);
     
     // Find where to insert the workspace selector - after the site title
     const headerTitle = document.querySelector('.md-header__title');
     if (headerTitle && headerTitle.parentNode) {
       headerTitle.parentNode.insertBefore(selectorContainer, headerTitle.nextSibling);
-    }
-    
-    // Set the current workspace in dropdown based on full URL
-    const currentUrl = window.location.href;
-    
-    for (let i = 0; i < selectElement.options.length; i++) {
-      if (currentUrl.includes(selectElement.options[i].value)) {
-        selectElement.selectedIndex = i;
-        break;
-      }
     }
   });
 </script>
