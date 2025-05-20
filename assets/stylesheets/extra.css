@@ -78,9 +78,15 @@
 [data-md-color-scheme="default"] .workspace-selector select option,
 [data-md-color-scheme="default"] .workspace-selector-inline select option,
 [data-md-color-scheme="default"] #workspace-dropdown option {
-  background-color: #bbbfd7 !important; /* Match dropdown to selector */
-  color: var(--md-default-fg-color) !important;
+  background-color: #2f3c86 !important; /* Match dropdown to selector */
+  color: #bbbfd7 !important;
   padding: 0.6rem !important;
+}
+
+[data-md-color-scheme="slate"] .workspace-selector select option:checked,
+[data-md-color-scheme="slate"] .workspace-selector-inline select option:checked,
+[data-md-color-scheme="slate"] #workspace-dropdown option:checked {
+  background-color: #5666be !important; /* Darker than hover for distinction */
 }
 
 /* Responsive adjustments */
