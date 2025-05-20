@@ -31,10 +31,9 @@
 [data-md-color-scheme="slate"] .workspace-selector select,
 [data-md-color-scheme="slate"] .workspace-selector-inline select,
 [data-md-color-scheme="slate"] #workspace-dropdown {
-  background-color: #0f1013 !important; /* Dark background */
+  background-color: #0f1013 !important; /* New dark background */
   color: var(--md-default-fg-color) !important;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(255, 255, 255, 0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
-  height: 2.4rem !important; /* Explicit height for reference */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(253, 253, 254, 0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
 }
 
 [data-md-color-scheme="slate"] .workspace-selector select:hover,
@@ -43,44 +42,26 @@
 [data-md-color-scheme="slate"] .workspace-selector-inline select:focus,
 [data-md-color-scheme="slate"] #workspace-dropdown:hover,
 [data-md-color-scheme="slate"] #workspace-dropdown:focus {
-  background-color: #323136 !important; /* Hover color */
+  background-color: #323136 !important; /* New hover color */
   outline: none !important;
   box-shadow: none !important;
 }
 
-/* Dark mode dropdown options styling */
 [data-md-color-scheme="slate"] .workspace-selector select option,
 [data-md-color-scheme="slate"] .workspace-selector-inline select option,
 [data-md-color-scheme="slate"] #workspace-dropdown option {
   background-color: #0f1013 !important; /* Match dropdown to selector */
   color: var(--md-default-fg-color) !important;
-  padding: 0.7rem !important; /* Increased padding for height */
-  height: 2.4rem !important; /* Match height of selector */
-  line-height: 1rem !important; /* Helps with vertical centering */
-}
-
-/* Dark mode dropdown option hover */
-[data-md-color-scheme="slate"] .workspace-selector select option:hover,
-[data-md-color-scheme="slate"] .workspace-selector-inline select option:hover,
-[data-md-color-scheme="slate"] #workspace-dropdown option:hover {
-  background-color: #323136 !important; /* New hover color */
-  color: white !important;
-}
-
-/* The following styles target the dropdown options for better browser compatibility */
-[data-md-color-scheme="slate"] select:focus > option:checked,
-[data-md-color-scheme="slate"] select:focus > option:hover {
-  background-color: #323136 !important;
-  color: white !important;
+  padding: 0.6rem !important;
 }
 
 /* Light theme styling - new colors */
 [data-md-color-scheme="default"] .workspace-selector select,
 [data-md-color-scheme="default"] .workspace-selector-inline select,
 [data-md-color-scheme="default"] #workspace-dropdown {
-  background-color: #bbbfd7 !important; /* New light background */
-  color: #2c3e50 !important; /* Text color - darker for readability */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232c3e50' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+  background-color: #2f3c86 !important; /* New light background */
+  color: #bbbfd7 !important; /* Text color */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(253, 253, 254, 0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
 }
 
 [data-md-color-scheme="default"] .workspace-selector select:hover,
@@ -99,55 +80,7 @@
 [data-md-color-scheme="default"] #workspace-dropdown option {
   background-color: #bbbfd7 !important; /* Match dropdown to selector */
   color: var(--md-default-fg-color) !important;
-  padding: 0.7rem !important; /* Increased padding for height */
-  height: 2.4rem !important; /* Match height of selector */
-  line-height: 1rem !important; /* Helps with vertical centering */
-}
-
-/* Light mode dropdown option hover */
-[data-md-color-scheme="default"] .workspace-selector select option:hover,
-[data-md-color-scheme="default"] .workspace-selector-inline select option:hover,
-[data-md-color-scheme="default"] #workspace-dropdown option:hover {
-  background-color: #5666be !important;
-  color: white !important;
-}
-
-/* The following styles target the dropdown options for better browser compatibility */
-[data-md-color-scheme="default"] select:focus > option:checked,
-[data-md-color-scheme="default"] select:focus > option:hover {
-  background-color: #5666be !important;
-  color: white !important;
-}
-
-/* Additional styles to target the dropdown in various browsers */
-@-moz-document url-prefix() {
-  /* Firefox-specific styles */
-  [data-md-color-scheme="slate"] select option:hover,
-  [data-md-color-scheme="slate"] select option:focus,
-  [data-md-color-scheme="slate"] select option:active {
-    background-color: #323136 !important;
-    color: white !important;
-  }
-  
-  [data-md-color-scheme="default"] select option:hover,
-  [data-md-color-scheme="default"] select option:focus,
-  [data-md-color-scheme="default"] select option:active {
-    background-color: #5666be !important;
-    color: white !important;
-  }
-}
-
-/* Webkit (Chrome, Safari, newer Edge) specific styles */
-@media screen and (-webkit-min-device-pixel-ratio:0) {
-  [data-md-color-scheme="slate"] select option:hover,
-  [data-md-color-scheme="slate"] select option:focus {
-    background-color: #323136 !important;
-  }
-  
-  [data-md-color-scheme="default"] select option:hover,
-  [data-md-color-scheme="default"] select option:focus {
-    background-color: #5666be !important;
-  }
+  padding: 0.6rem !important;
 }
 
 /* Responsive adjustments */
